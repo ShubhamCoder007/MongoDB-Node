@@ -6,15 +6,18 @@ mongoose.connect("mongodb://localhost/mongo-exercises")
     .then(() => console.log('Connected to MongoDB...'))
     .catch(err => console.log('Error occured while connecting...',err));
 
-const courseSchema = mongoose.Schema({
-    name: String,
-    author: String,
-    date: {type: Date, default: Date.now},
-    isPublished: Boolean,
-    price: Number
-});
+    //schema is required when compiling class and sending data for loading its not
+// const courseSchema = mongoose.Schema({
+//     // name: String,
+//     // author: String,
+//     // date: {type: Date, default: Date.now},
+//     // isPublished: Boolean,
+//     // price: Number,
+//        tags: [String]
+// });
 
-const Course = mongoose.model('courses', courseSchema);
+//directly inject schema here
+const Course = mongoose.model('courses', mongoose.Schema());
 
 async function getCourse() {
     const course = await Course.find({isPublished: true, tags: 'backend'})

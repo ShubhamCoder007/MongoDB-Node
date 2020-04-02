@@ -8,7 +8,7 @@ mongoose.connect('mongodb://localhost/playground')
 
 //the schema is only an implementation in mongoose
 //mongodb doesn't have schema as such
-const courseSchema = mongoose.Schema({
+const courseSchema = new mongoose.Schema({
     name: String,
     author: String,
     Date: {type: Date, default: Date.now},
@@ -42,5 +42,43 @@ async function getCourses() {
     console.log(Courses);
 }
 
+
+async function updateCourse(id) {
+    const course = await Course.findById(id);
+    if(!course) return;
+
+    // course.isPublished = true;
+    // course.author = "another one";
+
+    course.set({
+        isPublished: true,
+        author: "Another name"
+    });
+
+    const result = await course.save();
+    console.log(result);
+}
+
+async function updateFirst(id) {
+    //update(condition, updates)
+    const result = await Course.findByIdAndUpdate({ _id: id}, 
+        {
+            $set:{
+                isPublished: true,
+                author: 'Shubham'
+            }
+        }, {new: true});
+    
+    console.log(result);
+}
+
+async function removeCourse(id) {
+    // const result = await Course.deleteOne({ _id: id});
+    const course = await Course.findByIdAndRemove(id);
+    console.log(result);
+}
+
+removeCourse('5a68fdd7bee8ea64649c2777');
+// updateFirst('5a68fdd7bee8ea64649c2777');
 //createCourse();
-getCourses();
+// getCourses();

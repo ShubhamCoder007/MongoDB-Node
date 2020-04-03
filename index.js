@@ -9,11 +9,39 @@ mongoose.connect('mongodb://localhost/playground')
 //the schema is only an implementation in mongoose
 //mongodb doesn't have schema as such
 const courseSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String, 
+        required: true,
+        minlength: 5,
+        maxlength: 200,
+        // match: /pattern/
+        //enum list has to be used else error
+        // enum: ['AI', 'Network', 'Web']
+    },
+
     author: String,
     Date: {type: Date, default: Date.now},
-    tags: [String],
-    isPublished: Boolean
+
+    //custom validator, validator has a function for validation logic
+    //message as error message
+    tags: {
+        type: Array,
+        validate: {
+            validator: function(v) {
+                return v.length() > 0;
+            },
+            message: 'A course should have atleast one tag...'
+        }
+    },
+
+    isPublished: Boolean,
+    //conditional validation with a func, arrow func cant be used this conflict
+    price: {
+        type: Number,
+        required: function() {
+            return this.isPublished;
+        }
+    }
 });
 
 //compiling the schema to create class
@@ -27,8 +55,12 @@ async function createCourse() {
         isPublished: true
     });
 
-    const result = await course.save();
-    console.log(result);
+    try{
+        const result = await course.save();
+        console.log(result);
+    }catch(err) {
+        console.log(err.message);
+    }
 }
 
 async function getCourses() {
@@ -78,7 +110,7 @@ async function removeCourse(id) {
     console.log(result);
 }
 
-removeCourse('5a68fdd7bee8ea64649c2777');
+// removeCourse('5a68fdd7bee8ea64649c2777');
 // updateFirst('5a68fdd7bee8ea64649c2777');
-//createCourse();
+createCourse();
 // getCourses();
